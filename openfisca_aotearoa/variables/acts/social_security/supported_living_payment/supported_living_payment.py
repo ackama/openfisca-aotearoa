@@ -65,35 +65,25 @@ class supported_living_payment__entitled(variables.Variable):
     definition_period = periods.MONTH
     label = "Eligible for Supported Living Payment."
     reference = """
-        http://legislation.govt.nz/act/public/1964/0136/latest/whole.html#DLM5468367
-        40A Supported living payment: purpose
-        (1) The purpose of the supported living payment is to provide income support
-            to people because they are people who fall within any one of the following 3 categories:
-        (a) people who have, and are likely to have in the future, a severely restricted
-            capacity to support themselves through open employment because of sickness, injury, or disability:
-        (b) people who are totally blind:
-        (c) people who are required to give full-time care and attention at home to some
-            other person (other than their spouse or partner) who is a patient requiring care.
+        https://legislation.govt.nz/act/public/2018/0032/latest/whole.html#DLM6783175
     """
 
     def formula(persons, period, parameters):
-        # The 3 ways of being eligible
+        # A person is entitled to the supported living payment if the person—
+        # (a) has restricted work capacity or is totally blind; and
+        # (b) meets the residential requirement; and
+        # (c) is aged 16 years or over.
         disabled = persons("supported_living_payment__restricted_work_capacity", period.first_week)
-        blind = persons("totally_blind", period)
+        blind = persons("totally_blind", period.start)
         carer = persons("supported_living_payment__caring_for_another_person", period.first_week)
 
-        # 40B (4) A person who is not both permanently and severely restricted in his or her capacity for
-        # work must not be granted a supported living payment under this section, unless he or she is totally blind.
+        no_child = persons("social_security__dependent_children", period.first_week) == 0
+        gte_16 = persons("age", period.start) >= 16
+        gte_18 = persons("age", period.start) >= 18
+        gte_20 = persons("age", period.start) >= 20
+        is_old_enough = carer * ( ( gte_18 * no_child ) + gte_20 ) + ( disabled + blind ) * gte_16
 
-        # 40B (5) A person must not be granted a supported living payment under this section if the chief
-        # executive is satisfied that the person's restricted capacity for work, or total blindness, was
-        # self-inflicted and brought about by the person with a view to qualifying for a benefit.
         not_self_inflicted = not_(persons("social_security__disability_self_inflicted", period))
-
-        # 40B (1A) An applicant for the supported living payment under
-        # this section must be aged at least 16 years.
-        is_old_enough = persons("age", period.start) >= 16
-
         # 40B (1B) An applicant for the supported living payment under
         # this section must meet the residential requirements in section 74AA.
         immigration__resident_or_citizen = persons("immigration__citizen_or_resident", period)
@@ -103,7 +93,7 @@ class supported_living_payment__entitled(variables.Variable):
         # # income low enough?
         income = persons("supported_living_payment__below_income_threshold", period)
 
-        return resides_in_nz * (disabled + blind + carer) * not_self_inflicted * is_old_enough * immigration__resident_or_citizen * income
+        return resides_in_nz * (disabled + blind + carer) * not_self_inflicted * is_old_enough * income
 
 
 class supported_living_payment__base(variables.Variable):

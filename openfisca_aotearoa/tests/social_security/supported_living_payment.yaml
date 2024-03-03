@@ -15,7 +15,7 @@
   absolute_error_margin: 0
   input:
     age:
-      "2018-10-01": 25
+      "2018-10-01": 16
     citizenship__citizen: true
     totally_blind: true
     supported_living_payment__below_income_threshold: true
@@ -25,18 +25,46 @@
       2018-10:
         - true
 
+- name: Supported Living Payment - totally blind, young
+  period: 2018-10
+  absolute_error_margin: 0
+  input:
+    age:
+      "2018-10-01": 15
+    citizenship__citizen: true
+    totally_blind: true
+    supported_living_payment__below_income_threshold: true
+    social_security__residential_requirement: true
+  output:
+    supported_living_payment__entitled:
+      2018-10:
+        - false
+
 - name: Supported Living Payment - "severely" disabled
   period: 2018-10
   absolute_error_margin: 0
   input:
     age:
-      "2018-10-01": 25
+      "2018-10-01": 16
     citizenship__citizen: true
     supported_living_payment__restricted_work_capacity: true
     supported_living_payment__below_income_threshold: true
     social_security__residential_requirement: true
   output:
     supported_living_payment__entitled: true
+
+- name: Supported Living Payment - "severely" disabled, young
+  period: 2018-10
+  absolute_error_margin: 0
+  input:
+    age:
+      "2018-10-01": 15
+    citizenship__citizen: true
+    supported_living_payment__restricted_work_capacity: true
+    supported_living_payment__below_income_threshold: true
+    social_security__residential_requirement: true
+  output:
+    supported_living_payment__entitled: false
 
 
 - name: Supported Living Payment - self inflicted injury
@@ -58,13 +86,54 @@
   absolute_error_margin: 0
   input:
     age:
-      "2018-10-01": 25
+      "2018-10-01": 18
     citizenship__citizen: true
     supported_living_payment__caring_for_another_person: true
     supported_living_payment__below_income_threshold: true
     social_security__residential_requirement: true
   output:
     supported_living_payment__entitled: true
+
+- name: Supported Living Payment - Carer looking after another person, young
+  period: 2018-10
+  absolute_error_margin: 0
+  input:
+    age:
+      "2018-10-01": 17
+    citizenship__citizen: true
+    supported_living_payment__caring_for_another_person: true
+    supported_living_payment__below_income_threshold: true
+    social_security__residential_requirement: true
+  output:
+    supported_living_payment__entitled: false
+
+- name: Supported Living Payment - Carer looking after another person, with child
+  period: 2018-10
+  absolute_error_margin: 0
+  input:
+    age:
+      "2018-10-01": 20
+    citizenship__citizen: true
+    supported_living_payment__caring_for_another_person: true
+    supported_living_payment__below_income_threshold: true
+    social_security__residential_requirement: true
+    social_security__dependent_children: 1
+  output:
+    supported_living_payment__entitled: true
+
+- name: Supported Living Payment - Carer looking after another person, with child, young
+  period: 2018-10
+  absolute_error_margin: 0
+  input:
+    age:
+      "2018-10-01": 19
+    citizenship__citizen: true
+    supported_living_payment__caring_for_another_person: true
+    supported_living_payment__below_income_threshold: true
+    social_security__residential_requirement: true
+    social_security__dependent_children: 1
+  output:
+    supported_living_payment__entitled: false
 
 
 - name: Supported Living Payment - Carer looking after another person, not in NZ
